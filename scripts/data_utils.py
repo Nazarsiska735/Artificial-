@@ -4,6 +4,7 @@ from builtins import range
 from six.moves import cPickle as pickle
 import numpy as np
 import os
+import warnings
 from imageio import imread
 import platform
 
@@ -13,7 +14,10 @@ def load_pickle(f):
     if version[0] == "2":
         return pickle.load(f)
     elif version[0] == "3":
-        return pickle.load(f, encoding="latin1")
+        with warnings.catch_warnings():
+            visible_warning = getattr(np.exceptions, "VisibleDeprecationWarning", Warning)
+            warnings.simplefilter("ignore", visible_warning)
+            return pickle.load(f, encoding="latin1")
     raise ValueError("invalid python version: {}".format(version))
 
 
